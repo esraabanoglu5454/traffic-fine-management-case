@@ -9,3 +9,6 @@ TestResults/
 *.db
 *.db-shm
 *.db-wal
+# Local preparation notes
+docs/DELIVERY.md
+docs/LIVE_SESSION_GUIDE.md
