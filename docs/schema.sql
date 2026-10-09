@@ -1,0 +1,308 @@
+﻿IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+GO
+
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetRoles] (
+        [Id] nvarchar(450) NOT NULL,
+        [Name] nvarchar(256) NULL,
+        [NormalizedName] nvarchar(256) NULL,
+        [ConcurrencyStamp] nvarchar(max) NULL,
+        CONSTRAINT [PK_AspNetRoles] PRIMARY KEY ([Id])
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetUsers] (
+        [Id] nvarchar(450) NOT NULL,
+        [DisplayName] nvarchar(100) NOT NULL,
+        [UserName] nvarchar(256) NULL,
+        [NormalizedUserName] nvarchar(256) NULL,
+        [Email] nvarchar(256) NULL,
+        [NormalizedEmail] nvarchar(256) NULL,
+        [EmailConfirmed] bit NOT NULL,
+        [PasswordHash] nvarchar(max) NULL,
+        [SecurityStamp] nvarchar(max) NULL,
+        [ConcurrencyStamp] nvarchar(max) NULL,
+        [PhoneNumber] nvarchar(max) NULL,
+        [PhoneNumberConfirmed] bit NOT NULL,
+        [TwoFactorEnabled] bit NOT NULL,
+        [LockoutEnd] datetimeoffset NULL,
+        [LockoutEnabled] bit NOT NULL,
+        [AccessFailedCount] int NOT NULL,
+        CONSTRAINT [PK_AspNetUsers] PRIMARY KEY ([Id])
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [Vehicles] (
+        [Id] int NOT NULL IDENTITY,
+        [Plate] nvarchar(20) NOT NULL,
+        [Type] int NOT NULL,
+        [Brand] nvarchar(60) NOT NULL,
+        [Model] nvarchar(60) NOT NULL,
+        CONSTRAINT [PK_Vehicles] PRIMARY KEY ([Id])
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetRoleClaims] (
+        [Id] int NOT NULL IDENTITY,
+        [RoleId] nvarchar(450) NOT NULL,
+        [ClaimType] nvarchar(max) NULL,
+        [ClaimValue] nvarchar(max) NULL,
+        CONSTRAINT [PK_AspNetRoleClaims] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AspNetRoles] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetUserClaims] (
+        [Id] int NOT NULL IDENTITY,
+        [UserId] nvarchar(450) NOT NULL,
+        [ClaimType] nvarchar(max) NULL,
+        [ClaimValue] nvarchar(max) NULL,
+        CONSTRAINT [PK_AspNetUserClaims] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_AspNetUserClaims_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetUserLogins] (
+        [LoginProvider] nvarchar(450) NOT NULL,
+        [ProviderKey] nvarchar(450) NOT NULL,
+        [ProviderDisplayName] nvarchar(max) NULL,
+        [UserId] nvarchar(450) NOT NULL,
+        CONSTRAINT [PK_AspNetUserLogins] PRIMARY KEY ([LoginProvider], [ProviderKey]),
+        CONSTRAINT [FK_AspNetUserLogins_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetUserRoles] (
+        [UserId] nvarchar(450) NOT NULL,
+        [RoleId] nvarchar(450) NOT NULL,
+        CONSTRAINT [PK_AspNetUserRoles] PRIMARY KEY ([UserId], [RoleId]),
+        CONSTRAINT [FK_AspNetUserRoles_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AspNetRoles] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_AspNetUserRoles_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [AspNetUserTokens] (
+        [UserId] nvarchar(450) NOT NULL,
+        [LoginProvider] nvarchar(450) NOT NULL,
+        [Name] nvarchar(450) NOT NULL,
+        [Value] nvarchar(max) NULL,
+        CONSTRAINT [PK_AspNetUserTokens] PRIMARY KEY ([UserId], [LoginProvider], [Name]),
+        CONSTRAINT [FK_AspNetUserTokens_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [Fines] (
+        [Id] int NOT NULL IDENTITY,
+        [Reference] nvarchar(50) NOT NULL,
+        [VehicleId] int NOT NULL,
+        [ViolationDate] date NOT NULL,
+        [Amount] decimal(18,2) NOT NULL,
+        [Description] nvarchar(1000) NOT NULL,
+        [Status] int NOT NULL,
+        [CreatedById] nvarchar(450) NOT NULL,
+        [CreatedAt] datetimeoffset NOT NULL,
+        [Version] uniqueidentifier NOT NULL,
+        CONSTRAINT [PK_Fines] PRIMARY KEY ([Id]),
+        CONSTRAINT [CK_Fine_Amount] CHECK ([Amount] > 0),
+        CONSTRAINT [FK_Fines_AspNetUsers_CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [AspNetUsers] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_Fines_Vehicles_VehicleId] FOREIGN KEY ([VehicleId]) REFERENCES [Vehicles] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE TABLE [ApprovalHistory] (
+        [Id] bigint NOT NULL IDENTITY,
+        [TrafficFineId] int NOT NULL,
+        [ActorId] nvarchar(450) NOT NULL,
+        [ActorName] nvarchar(100) NOT NULL,
+        [OccurredAt] datetimeoffset NOT NULL,
+        [Action] int NOT NULL,
+        [Comment] nvarchar(1000) NOT NULL,
+        [PreviousStatus] int NULL,
+        [NewStatus] int NOT NULL,
+        CONSTRAINT [PK_ApprovalHistory] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_ApprovalHistory_AspNetUsers_ActorId] FOREIGN KEY ([ActorId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_ApprovalHistory_Fines_TrafficFineId] FOREIGN KEY ([TrafficFineId]) REFERENCES [Fines] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_ApprovalHistory_ActorId] ON [ApprovalHistory] ([ActorId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_ApprovalHistory_TrafficFineId_OccurredAt] ON [ApprovalHistory] ([TrafficFineId], [OccurredAt]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_AspNetRoleClaims_RoleId] ON [AspNetRoleClaims] ([RoleId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    EXEC(N'CREATE UNIQUE INDEX [RoleNameIndex] ON [AspNetRoles] ([NormalizedName]) WHERE [NormalizedName] IS NOT NULL');
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_AspNetUserClaims_UserId] ON [AspNetUserClaims] ([UserId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_AspNetUserLogins_UserId] ON [AspNetUserLogins] ([UserId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_AspNetUserRoles_RoleId] ON [AspNetUserRoles] ([RoleId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [EmailIndex] ON [AspNetUsers] ([NormalizedEmail]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    EXEC(N'CREATE UNIQUE INDEX [UserNameIndex] ON [AspNetUsers] ([NormalizedUserName]) WHERE [NormalizedUserName] IS NOT NULL');
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_Fines_CreatedById] ON [Fines] ([CreatedById]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Fines_Reference] ON [Fines] ([Reference]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_Fines_Status_CreatedAt] ON [Fines] ([Status], [CreatedAt]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE INDEX [IX_Fines_VehicleId] ON [Fines] ([VehicleId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_Vehicles_Plate] ON [Vehicles] ([Plate]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261009135000_InitialCreate'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261009135000_InitialCreate', N'9.0.15');
+END;
+
+COMMIT;
+GO
+
