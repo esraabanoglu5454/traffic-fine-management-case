@@ -54,11 +54,11 @@ dotnet run --project src/TrafficFine.Web
 
 **Adres:** https://localhost:7104 (alternatif: http://localhost:5104, HTTPS'ye yönlendirilir).
 
-| Demo e-posta | Rol | Yetki |
-| --- | --- | --- |
+| Demo e-posta         | Rol        | Yetki                                                                                         |
+| -------------------- | ---------- | --------------------------------------------------------------------------------------------- |
 | operasyon@case.local | Operations | Araç/ceza oluşturur; kendi Yeni kaydını düzenler/gönderir; kendi reddedilen kaydını düzeltir. |
-| yonetici@case.local | Manager | Yönetici Onayı aşamasında onay veya gerekçeli ret verir. |
-| finans@case.local | Finance | Finans Onayı aşamasında onay veya gerekçeli ret verir. |
+| yonetici@case.local  | Manager    | Yönetici Onayı aşamasında onay veya gerekçeli ret verir.                                      |
+| finans@case.local    | Finance    | Finans Onayı aşamasında onay veya gerekçeli ret verir.                                        |
 
 Tüm hesapların başlangıç şifresi `Demo:Password` değeridir. Seeder yalnızca **Development** ortamında ve `Demo:Seed=true` ise çalışır. Tekrar çalıştırıldığında mevcut demo kullanıcılarının şifresini değiştirmez; tanımlı demo tutanaklarını çoğaltmaz. Beş durumun her biri için örnek kayıt oluşturur. Demo:Seed daha sonra false yapılabilir; kullanıcılar veritabanında kalır.
 
@@ -92,20 +92,20 @@ dotnet test tests/TrafficFine.Tests/TrafficFine.Tests.csproj -m:1 -p:UseSharedCo
 
 ## İş kuralları / alınan kararlar
 
-| Konu | Karar |
-| --- | --- |
-| Yeni | Taslak benzeri başlangıç durumu. Oluşturan operasyon kullanıcısı açıkça onaya gönderir. |
-| Rol ve sahiplik | Herkes kayıtları okuyabilir. Yazma işlemleri role/duruma bağlıdır; taslak düzenleme ve yeniden açma yalnızca oluşturana aittir. |
-| Kendi kaydını onaylama | Kullanıcı çoklu rol sahibi olsa bile kendi oluşturduğu kaydı onaylayamaz/reddedemez. |
-| Ret | Yönetici/finans aşamasında yapılabilir; boş olmayan neden zorunludur. |
-| Ret sonrası | Sahibi bilgiler üzerinde düzeltme yapar; Yeni'ye döner; önceki geçmiş korunur. Süreç baştan işler. |
-| Tamamlandı | Finans onayı bitti demektir; ödeme yapıldığı anlamına gelmez. Kayıt düzenlenemez. |
-| Geçmiş | Onay ve ret yanında oluşturma/düzenleme/gönderme/yeniden açma da kaydedilir. Geçmişi değiştiren/silen UI veya endpoint yoktur. |
-| Tarih / para | İhlal tarihi gelecekte olamaz. Tutar pozitif, en fazla iki ondalık basamak; decimal(18,2). UI Türkçe kültürle virgül kabul eder. |
-| Benzersizlik | Normalize edilen plaka ve tutanak numarası için SQL unique index. Aynı anda gelen mükerrer kayıt DB'de de engellenir. |
-| Eşzamanlılık | Guid Version concurrency token. Formdaki eski token ve DB'deki race kontrolü birlikte kullanılır. |
-| Zaman | Geçmiş DateTimeOffset olarak UTC tutulur; UI Türkiye saatine çevirir. |
-| Silme | Audit bütünlüğü için case kapsamına silme eklenmedi; ilgili ilişkiler Restrict. |
+| Konu                   | Karar                                                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Yeni                   | Taslak benzeri başlangıç durumu. Oluşturan operasyon kullanıcısı açıkça onaya gönderir.                                          |
+| Rol ve sahiplik        | Herkes kayıtları okuyabilir. Yazma işlemleri role/duruma bağlıdır; taslak düzenleme ve yeniden açma yalnızca oluşturana aittir.  |
+| Kendi kaydını onaylama | Kullanıcı çoklu rol sahibi olsa bile kendi oluşturduğu kaydı onaylayamaz/reddedemez.                                             |
+| Ret                    | Yönetici/finans aşamasında yapılabilir; boş olmayan neden zorunludur.                                                            |
+| Ret sonrası            | Sahibi bilgiler üzerinde düzeltme yapar; Yeni'ye döner; önceki geçmiş korunur. Süreç baştan işler.                               |
+| Tamamlandı             | Finans onayı bitti demektir; ödeme yapıldığı anlamına gelmez. Kayıt düzenlenemez.                                                |
+| Geçmiş                 | Onay ve ret yanında oluşturma/düzenleme/gönderme/yeniden açma da kaydedilir. Geçmişi değiştiren/silen UI veya endpoint yoktur.   |
+| Tarih / para           | İhlal tarihi gelecekte olamaz. Tutar pozitif, en fazla iki ondalık basamak; decimal(18,2). UI Türkçe kültürle virgül kabul eder. |
+| Benzersizlik           | Normalize edilen plaka ve tutanak numarası için SQL unique index. Aynı anda gelen mükerrer kayıt DB'de de engellenir.            |
+| Eşzamanlılık           | Guid Version concurrency token. Formdaki eski token ve DB'deki race kontrolü birlikte kullanılır.                                |
+| Zaman                  | Geçmiş DateTimeOffset olarak UTC tutulur; UI Türkiye saatine çevirir.                                                            |
+| Silme                  | Audit bütünlüğü için case kapsamına silme eklenmedi; ilgili ilişkiler Restrict.                                                  |
 
 ## Mimari
 
@@ -154,4 +154,24 @@ Case kapsamına kullanıcı yönetimi/kayıt ekranı, gerçek ödeme, dosya yük
 
 ## Başvuruya teslim
 
-Şirketin güncel e-postası teslim için **15.10.2026, saat 17:00** ve **yazilim@sarilar.com.tr** bilgisini veriyor. Bilgilendirme PDF'inde eski tarih/farklı adres bulunduğu için güncel e-posta esas alınmıştır. Repository erişimi alıcıya açık olmalı; gerçek şifreler, user-secrets, yerel veritabanı, bin/obj ve şirket e-posta ekleri Git'e eklenmemelidir. Yardım alınan araçlar sorulursa kullanılan desteği ve bizzat doğruladığınız/anladığınız kısımları doğru anlatın.
+## Proje Kapsamı ve Teslim Notları
+
+Bu proje, Junior .NET Developer case çalışması kapsamında ASP.NET Core MVC, Entity Framework Core ve SQL Server kullanılarak geliştirilmiştir.
+
+Uygulamada araç yönetimi, trafik cezası oluşturma, rol bazlı onay mekanizması ve işlem geçmişi özellikleri bulunmaktadır.
+
+### Doğrulama
+
+- Uygulama .NET 9 üzerinde derlenmiştir.
+- SQL Server LocalDB üzerinde veritabanı migration işlemleri gerçekleştirilmiştir.
+- Araç ve trafik cezası oluşturma işlemleri doğrulanmıştır.
+- Operasyon, yönetici ve finans kullanıcılarıyla onay süreçleri test edilmiştir.
+- Ret, düzeltme ve yeniden onaya gönderme senaryoları doğrulanmıştır.
+- 37 otomatik testin tamamı başarıyla sonuçlanmıştır.
+- Tamamlanan kayıtların arayüz üzerinden düzenlenemediği kontrol edilmiştir.
+
+### Teknik Dokümantasyon
+
+Projenin kurulumu, çalıştırılması, veri modeli, iş kuralları ve test komutları bu README dosyasında açıklanmıştır.
+
+Ek doğrulama bilgileri `docs/VERIFICATION.md` dosyasında bulunmaktadır.

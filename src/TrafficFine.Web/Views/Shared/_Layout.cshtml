@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="topbar">
-    <a class="brand" asp-controller="Home" asp-action="Index"><span class="brand-icon">T</span><span>Trafik Ceza Yönetimi<small>ARAÇ & ONAY TAKİBİ</small></span></a>
+    <a class="brand" asp-controller="Home" asp-action="Index"><img class="brand-logo" src="~/images/sarilar-group-logo.jpg" alt="Sarılar Group" asp-append-version="true" /><span>Trafik Ceza Yönetimi<small>ARAÇ & ONAY TAKİBİ</small></span></a>
     @if (User.Identity?.IsAuthenticated == true)
     {
         <div class="account"><span>@User.Identity.Name<small>@(User.IsInRole(Roles.Operations) ? "Operasyon" : User.IsInRole(Roles.Manager) ? "Yönetici" : "Finans")</small></span>
