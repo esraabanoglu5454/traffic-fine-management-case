@@ -31,7 +31,7 @@ public sealed class FineForm
     public int VehicleId { get; set; }
     [Required, DataType(DataType.Date), Display(Name = "İhlal tarihi")]
     public DateOnly ViolationDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
-    [Range(typeof(decimal), "0.01", "9999999999999999.99", ErrorMessage = "Tutar sıfırdan büyük olmalı."), Display(Name = "Tutar (TL)")]
+    [Range(typeof(decimal), "0.01", "9999999999999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "Tutar sıfırdan büyük olmalı."), Display(Name = "Tutar (TL)")]
     public decimal Amount { get; set; }
     [Required, StringLength(1000), Display(Name = "İhlal açıklaması")]
     public string Description { get; set; } = "";
