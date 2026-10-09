@@ -135,11 +135,13 @@ Veri şeması: `Vehicle 1→N FineRecord`, `FineRecord 1→N ApprovalHistory`, `
 7. Tamamlanan kaydın düzenlenemediğini ve bütün geçmişi gösterin.
 8. Testleri çalıştırın. Aynı kaydı iki sekmede açıp bir sekmede işlem yaptıktan sonra eski sekmeden işlem yapmayı deneyin.
 
-Görüşmeye hazırlık için [docs/LIVE_SESSION_GUIDE.md](docs/LIVE_SESSION_GUIDE.md).
-
 ## Kapsam ve sonraki iyileştirmeler
 
-Case kapsamına kullanıcı yönetimi/kayıt ekranı, gerçek ödeme, dosya yükleme, e-posta bildirimi, araç düzenleme/silme ve çoklu şirket yetkilendirmesi dahil edilmedi. Demo kullanıcıları yerel kurulumla oluşturulur. Üretimde kullanıcı provisioning, secrets yönetimi, HTTPS-only cookie, audit erişim politikası ve operasyonel izleme ayrıca tasarlanmalıdır. Audit kayıtları uygulama uçları üzerinden değiştirilemez; DB yöneticisine karşı kriptografik değişmezlik iddiası yoktur.
+Bu proje, trafik cezalarının kaydedilmesi, araç bilgilerinin yönetilmesi ve cezaların rol bazlı onay süreçlerinden geçirilmesi amacıyla geliştirilmiştir.
+
+Uygulamada kullanıcı yetkilendirmesi, veri doğrulama, işlem geçmişi, ret ve yeniden onay mekanizmaları bulunmaktadır.
+
+İlerleyen aşamalarda e-posta bildirimleri, raporlama, gelişmiş filtreleme ve kullanıcı yönetimi gibi özellikler eklenerek sistem genişletilebilir.
 
 ## Sorun giderme
 
