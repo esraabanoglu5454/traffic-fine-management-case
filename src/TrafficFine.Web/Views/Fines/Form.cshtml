@@ -1,0 +1,13 @@
+@model FineForm
+@{ ViewData["Title"] = Model.Id == 0 ? "Yeni Ceza" : "Cezayı Düzenle"; }
+<div class="page-heading"><div><span class="eyebrow">CEZA KAYDI</span><h1>@ViewData["Title"]</h1><p class="muted">Araç ve tutanak bilgilerini eksiksiz girin.</p></div><a class="text-link" asp-action="Index">Cezalara dön</a></div>
+@if (Model.IsRevision) { <div class="alert info">Reddedilen kayıt düzeltildikten sonra Yeni durumuna döner. Yeniden onaya göndermeniz gerekir.</div> }
+<section class="card section form-card"><form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" asp-route-id="@(Model.Id == 0 ? (int?)null : Model.Id)" method="post" class="form-grid">
+<input asp-for="Id" type="hidden" /><input asp-for="Version" type="hidden" /><input asp-for="IsRevision" type="hidden" />
+<div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+<div class="two-col"><div><label asp-for="Reference"></label><input asp-for="Reference" maxlength="50" required /><span asp-validation-for="Reference"></span></div><div><label asp-for="VehicleId"></label><select asp-for="VehicleId" asp-items="Model.Vehicles" required><option value="">Araç seçin</option></select><span asp-validation-for="VehicleId"></span></div></div>
+@if (Model.Vehicles.Count == 0) { <div class="alert info">Önce <a asp-controller="Vehicles" asp-action="Create">bir araç ekleyin</a>.</div> }
+<div class="two-col"><div><label asp-for="ViolationDate"></label><input asp-for="ViolationDate" type="date" required /><span asp-validation-for="ViolationDate"></span></div><div><label asp-for="Amount"></label><input asp-for="Amount" type="text" inputmode="decimal" placeholder="1500,00" required /><span asp-validation-for="Amount"></span><p class="helper">Ondalık ayırıcı olarak virgül kullanın (ör. 1500,50).</p></div></div>
+<div><label asp-for="Description"></label><textarea asp-for="Description" rows="4" maxlength="1000" required></textarea><span asp-validation-for="Description"></span></div>
+<div class="actions"><button class="button">Kaydet</button><a class="button secondary" asp-action="Index">Vazgeç</a></div>
+</form></section>

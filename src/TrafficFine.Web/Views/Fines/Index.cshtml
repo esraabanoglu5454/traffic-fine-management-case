@@ -1,0 +1,15 @@
+@model FineListView
+@{ ViewData["Title"] = "Trafik Cezaları"; }
+<div class="page-heading"><div><span class="eyebrow">CEZA TAKİBİ</span><h1>Trafik Cezaları</h1><p class="muted">Kayıtları arayın, durumlarını ve onay geçmişlerini inceleyin.</p></div>
+@if (User.IsInRole(Roles.Operations)) { <a class="button" asp-action="Create">+ Yeni ceza</a> }</div>
+<section class="card"><form method="get" class="filters"><label class="sr-only" for="search">Ceza ara</label><input id="search" name="search" value="@Model.Search" placeholder="Plaka veya tutanak numarası ara" /><label class="sr-only" for="status">Durum</label><select id="status" name="status"><option value="">Tüm durumlar</option>
+@foreach (var status in Enum.GetValues<FineStatus>()) { <option value="@status" selected="@(Model.Status == status)">@Labels.Status(status)</option> }
+</select><button class="button secondary">Filtrele</button><a asp-action="Index" class="text-link">Temizle</a></form>
+<div class="table-wrap"><table><thead><tr><th>Tutanak</th><th>Araç</th><th>İhlal tarihi</th><th>Tutar</th><th>Durum</th><th></th></tr></thead><tbody>
+@foreach (var fine in Model.Items) { <tr><td><a class="text-link" asp-action="Details" asp-route-id="@fine.Id">@fine.Reference</a></td><td><strong class="plate">@fine.Vehicle.Plate</strong></td><td>@fine.ViolationDate.ToString("dd.MM.yyyy")</td><td class="nowrap">@fine.Amount.ToString("N2") TL</td><td><span class="badge @fine.Status">@Labels.Status(fine.Status)</span></td><td><a class="text-link" asp-action="Details" asp-route-id="@fine.Id">İncele →</a></td></tr> }
+@if (Model.Items.Count == 0) { <tr><td colspan="6" class="empty">Bu filtrelere uygun ceza bulunamadı.</td></tr> }
+</tbody></table></div>
+<div class="table-footer"><span>@Model.TotalCount kayıt · Sayfa @Model.Page / @Model.TotalPages</span><div class="actions">
+@if (Model.Page > 1) { <a class="text-link" asp-route-page="@(Model.Page - 1)" asp-route-search="@Model.Search" asp-route-status="@Model.Status">← Önceki</a> }
+@if (Model.Page < Model.TotalPages) { <a class="text-link" asp-route-page="@(Model.Page + 1)" asp-route-search="@Model.Search" asp-route-status="@Model.Status">Sonraki →</a> }
+</div></div></section>

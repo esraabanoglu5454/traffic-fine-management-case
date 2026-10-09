@@ -23,7 +23,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : Ident
             .HasForeignKey(x => x.CreatedById).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<ApprovalHistory>().HasOne(x => x.Actor).WithMany()
             .HasForeignKey(x => x.ActorId).OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<ApprovalHistory>().HasOne(x => x.TrafficFine).WithMany(x => x.History)
+        builder.Entity<ApprovalHistory>().HasOne(x => x.FineRecord).WithMany(x => x.History)
             .HasForeignKey(x => x.TrafficFineId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<ApprovalHistory>().HasIndex(x => new { x.TrafficFineId, x.OccurredAt });
         builder.Entity<FineRecord>().ToTable(table =>

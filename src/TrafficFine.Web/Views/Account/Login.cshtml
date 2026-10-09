@@ -1,0 +1,14 @@
+@model LoginForm
+@{ ViewData["Title"] = "Giriş"; }
+<div class="login-wrap"><section class="card login-card">
+    <span class="eyebrow">GÜVENLİ ÇALIŞMA ALANI</span><h1>Hesabınıza giriş yapın</h1>
+    <p class="muted">Araçları, trafik cezalarını ve onay sürecini tek yerden yönetin.</p>
+    <form asp-action="Login" method="post" class="form-grid">
+        <input asp-for="ReturnUrl" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+        <div><label asp-for="Email"></label><input asp-for="Email" autocomplete="username" placeholder="kullanici@case.local" /><span asp-validation-for="Email"></span></div>
+        <div><label asp-for="Password"></label><input asp-for="Password" autocomplete="current-password" /><span asp-validation-for="Password"></span></div>
+        <button class="button">Giriş yap</button>
+    </form>
+    <p class="helper">Demo hesapları ve başlangıç kurulumu README dosyasında açıklanmıştır.</p>
+</section></div>

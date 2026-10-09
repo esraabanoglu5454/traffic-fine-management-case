@@ -1,0 +1,9 @@
+@model VehicleForm
+@{ ViewData["Title"] = "Yeni Araç"; }
+<div class="page-heading"><div><span class="eyebrow">ARAÇ KAYDI</span><h1>Yeni araç</h1><p class="muted">Plaka sistemde benzersiz olmalıdır.</p></div><a class="text-link" asp-action="Index">Araçlara dön</a></div>
+<section class="card section form-card"><form asp-action="Create" method="post" class="form-grid">
+<div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+<div class="two-col"><div><label asp-for="Plate"></label><input asp-for="Plate" placeholder="34 ABC 123" maxlength="20" required /><span asp-validation-for="Plate"></span></div><div><label asp-for="Type"></label><select asp-for="Type" asp-items="Html.GetEnumSelectList<VehicleType>()"></select><span asp-validation-for="Type"></span></div></div>
+<div class="two-col"><div><label asp-for="Brand"></label><input asp-for="Brand" maxlength="60" required /><span asp-validation-for="Brand"></span></div><div><label asp-for="Model"></label><input asp-for="Model" maxlength="60" required /><span asp-validation-for="Model"></span></div></div>
+<div class="actions"><button class="button">Aracı kaydet</button><a class="button secondary" asp-action="Index">Vazgeç</a></div>
+</form></section>

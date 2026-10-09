@@ -1,0 +1,28 @@
+@model FineRecord
+@{
+    ViewData["Title"] = Model.Reference;
+    var actor = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var owns = User.IsInRole(Roles.Operations) && actor == Model.CreatedById;
+    var manager = User.IsInRole(Roles.Manager) && Model.Status == FineStatus.ManagerApproval && actor != Model.CreatedById;
+    var finance = User.IsInRole(Roles.Finance) && Model.Status == FineStatus.FinanceApproval && actor != Model.CreatedById;
+    var editable = owns && Model.Status is FineStatus.New or FineStatus.Rejected;
+}
+<div class="page-heading"><div><span class="eyebrow">CEZA DETAYI</span><h1>@Model.Reference</h1><span class="badge @Model.Status">@Labels.Status(Model.Status)</span></div><a class="text-link" asp-action="Index">Cezalara dön</a></div>
+<div class="detail-grid"><section class="card section"><h2>Ceza bilgileri</h2><dl class="detail-list"><div><dt>Araç</dt><dd><strong class="plate">@Model.Vehicle.Plate</strong></dd></div><div><dt>Marka / model</dt><dd>@Model.Vehicle.Brand @Model.Vehicle.Model</dd></div><div><dt>Araç tipi</dt><dd>@Labels.Vehicle(Model.Vehicle.Type)</dd></div><div><dt>İhlal tarihi</dt><dd>@Model.ViolationDate.ToString("dd.MM.yyyy")</dd></div><div><dt>Tutar</dt><dd class="amount">@Model.Amount.ToString("N2") TL</dd></div><div><dt>Oluşturan</dt><dd>@Model.CreatedBy.DisplayName</dd></div></dl><h3>İhlal açıklaması</h3><p class="prewrap">@Model.Description</p></section>
+<section class="card section"><h2>Süreç işlemleri</h2>
+@if (editable) { <p class="muted">@(Model.Status == FineStatus.Rejected ? "Ret nedenini geçmişten inceleyip kaydı düzeltin." : "Bilgileri kontrol edin ve yönetici onayına gönderin.")</p><a class="button secondary" asp-action="Edit" asp-route-id="@Model.Id">@(Model.Status == FineStatus.Rejected ? "Düzelt ve yeniden aç" : "Bilgileri düzenle")</a> }
+@if (owns && Model.Status == FineStatus.New)
+{ <form asp-action="Decide" method="post" class="decision-form"><input name="Id" value="@Model.Id" type="hidden" /><input name="Version" value="@Model.Version" type="hidden" /><input name="Action" value="Submitted" type="hidden" /><button class="button">Yönetici onayına gönder</button></form> }
+@if (manager || finance)
+{
+    <p class="muted">Kararınız kullanıcı ve zaman bilgisiyle geçmişe kaydedilir.</p>
+    <form asp-action="Decide" method="post" class="form-grid decision-form"><input name="Id" value="@Model.Id" type="hidden" /><input name="Version" value="@Model.Version" type="hidden" /><input name="Action" value="@(manager ? "ManagerApproved" : "FinanceApproved")" type="hidden" /><div><label for="approve-comment">Onay açıklaması (isteğe bağlı)</label><textarea id="approve-comment" name="Comment" rows="2" maxlength="1000"></textarea></div><button class="button">@(manager ? "Onayla ve finansa gönder" : "Onayla ve tamamla")</button></form>
+    <form asp-action="Decide" method="post" class="form-grid reject-form"><input name="Id" value="@Model.Id" type="hidden" /><input name="Version" value="@Model.Version" type="hidden" /><input name="Action" value="Rejected" type="hidden" /><div><label for="reject-comment">Ret nedeni</label><textarea id="reject-comment" name="Comment" rows="3" required maxlength="1000" placeholder="Kaydın neden reddedildiğini açıklayın"></textarea></div><button class="button danger">Cezayı reddet</button></form>
+}
+else if (Model.Status == FineStatus.Completed) { <div class="alert success">Onay süreci tamamlandı. Kayıt değişikliğe kapalıdır.</div><p class="helper">Tamamlandı durumu ödeme yapıldığı anlamına gelmez.</p> }
+else if (!editable) { <p class="muted">Bu kayıt için mevcut aşamada gerçekleştirebileceğiniz bir işlem bulunmuyor.</p> }
+</section></div>
+<section class="card section history"><div class="section-heading"><h2>İşlem ve onay geçmişi</h2><span class="muted">@Model.History.Count işlem</span></div><div class="table-wrap"><table><thead><tr><th>Tarih (Türkiye)</th><th>Kullanıcı</th><th>İşlem</th><th>Durum değişikliği</th><th>Açıklama / ret nedeni</th></tr></thead><tbody>
+@foreach (var item in Model.History.OrderByDescending(x => x.OccurredAt).ThenByDescending(x => x.Id))
+{ <tr><td class="nowrap">@TimeZoneInfo.ConvertTime(item.OccurredAt, TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul")).ToString("dd.MM.yyyy HH:mm:ss")</td><td>@item.ActorName</td><td>@Labels.Action(item.Action)</td><td>@(item.PreviousStatus.HasValue ? Labels.Status(item.PreviousStatus.Value) : "—") → @Labels.Status(item.NewStatus)</td><td class="comment prewrap">@(string.IsNullOrWhiteSpace(item.Comment) ? "—" : item.Comment)</td></tr> }
+</tbody></table></div></section>

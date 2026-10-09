@@ -1,0 +1,20 @@
+@model DashboardView
+@{ ViewData["Title"] = "Genel Bakış"; }
+<div class="page-heading"><div><span class="eyebrow">KONTROL PANELİ</span><h1>Genel Bakış</h1><p class="muted">Ceza kayıtlarını ve bekleyen onayları takip edin.</p></div>
+@if (User.IsInRole(Roles.Operations)) { <a class="button" asp-controller="Fines" asp-action="Create">+ Yeni ceza</a> }
+</div>
+<div class="stats">
+    <a class="stat card" asp-controller="Vehicles" asp-action="Index"><span>Kayıtlı araç</span><strong>@Model.Vehicles</strong><small>Filodaki araçlar</small></a>
+    <a class="stat card" asp-controller="Fines" asp-action="Index" asp-route-status="ManagerApproval"><span>Yönetici onayı</span><strong>@Model.Manager</strong><small>Karar bekleyen kayıtlar</small></a>
+    <a class="stat card" asp-controller="Fines" asp-action="Index" asp-route-status="FinanceApproval"><span>Finans onayı</span><strong>@Model.Finance</strong><small>Son onay aşaması</small></a>
+    <a class="stat card" asp-controller="Fines" asp-action="Index" asp-route-status="Completed"><span>Tamamlandı</span><strong>@Model.Completed</strong><small>Onay süreci tamamlanan</small></a>
+</div>
+<section class="card section"><h2>Onay süreci</h2><p class="muted">Her aşama ilgili rol tarafından ilerletilir. Onay ve ret kararları geçmişe kaydedilir.</p>
+    <div class="workflow"><div><b>01</b><strong>Yeni</strong><span>Operasyon oluşturur</span></div><div><b>02</b><strong>Yönetici Onayı</strong><span>Yönetici değerlendirir</span></div><div><b>03</b><strong>Finans Onayı</strong><span>Finans değerlendirir</span></div><div><b>04</b><strong>Tamamlandı</strong><span>Kayıt değişikliğe kapanır</span></div></div>
+</section>
+<div class="summary-grid"><section class="card section"><h2>Kayıt özeti</h2><div class="summary-row"><span>Yeni kayıtlar</span><b>@Model.New</b></div><div class="summary-row"><span>Reddedilen kayıtlar</span><b>@Model.Rejected</b></div><div class="summary-row"><span>Tüm kayıtların toplam tutarı</span><b>@Model.TotalAmount.ToString("N2") TL</b></div><p class="helper">Toplam tutar tüm durumları içerir; ödeme durumu göstermez.</p></section>
+<section class="card section"><h2>Sıradaki işiniz</h2>
+@if (User.IsInRole(Roles.Operations)) { <p>Yeni kayıtları kontrol edip onaya gönderin. Reddedilen cezaları ret nedenine göre düzeltin.</p> }
+else if (User.IsInRole(Roles.Manager)) { <p>Yönetici onayındaki cezaları inceleyin. Onayladığınız kayıtlar finans aşamasına geçer.</p> }
+else { <p>Finans onayındaki cezaları inceleyin. Onayladığınız kayıtların süreci tamamlanır.</p> }
+<a class="button secondary" asp-controller="Fines" asp-action="Index">Cezaları görüntüle</a></section></div>
