@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TrafficFine.Web.Data;
 using TrafficFine.Web.Domain;
+using TrafficFine.Web.Services;
+using TrafficFine.Web.ViewModels;
 using Xunit;
 
 namespace TrafficFine.Tests;
@@ -41,9 +43,10 @@ public sealed class TestApp : WebApplicationFactory<Program>
         }
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Vehicles.Add(new Vehicle { Id = 1, Plate = "34TEST01", Brand = "Ford", Model = "Focus" });
-        db.Fines.Add(new FineRecord { Id = 1, Reference = "WEB-001", VehicleId = 1, CreatedById = Roles.Operations,
-            CreatedAt = DateTimeOffset.UtcNow, Amount = 1500, ViolationDate = new DateOnly(2026, 1, 1), Description = "Test description" });
         await db.SaveChangesAsync();
+        await scope.ServiceProvider.GetRequiredService<FineService>().CreateAsync(new FineForm
+        { Reference = "WEB-001", VehicleId = 1, Amount = 1500, ViolationDate = new DateOnly(2026, 1, 1), Description = "Test description" },
+            new Actor(Roles.Operations, "Operations@test.local", new HashSet<string> { Roles.Operations }));
     }
 }
 public sealed class WebTests : IAsyncLifetime
@@ -137,7 +140,7 @@ public sealed class WebTests : IAsyncLifetime
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         Assert.Equal(FineStatus.New, (await db.Fines.SingleAsync()).Status);
-        Assert.Equal(0, await db.ApprovalHistory.CountAsync());
+        Assert.Equal(1, await db.ApprovalHistory.CountAsync());
     }
     [Fact]
     public async Task Login_return_url_cannot_redirect_to_external_site()
@@ -149,5 +152,49 @@ public sealed class WebTests : IAsyncLifetime
             ["__RequestVerificationToken"] = Hidden(html, "__RequestVerificationToken")
         }));
         Assert.Equal("/", response.Headers.Location?.ToString());
+    }
+    [Fact]
+    public async Task MVC_three_roles_complete_rejection_revision_and_approval_cycle()
+    {
+        async Task Decision(string action, string comment = "")
+        {
+            var html = await client.GetStringAsync("/Fines/Details/1");
+            var response = await client.PostAsync("/Fines/Decide", new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["Id"] = "1", ["Version"] = Hidden(html, "Version"), ["Action"] = action, ["Comment"] = comment,
+                ["__RequestVerificationToken"] = Hidden(html, "__RequestVerificationToken")
+            }));
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        }
+        await Login(Roles.Operations);
+        await Decision("Submitted");
+        await Login(Roles.Manager);
+        await Decision("Rejected", "Açıklama düzeltilmeli.");
+        await Login(Roles.Operations);
+        var edit = await client.GetStringAsync("/Fines/Edit/1");
+        var updated = await client.PostAsync("/Fines/Edit/1", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["Id"] = "1", ["Version"] = Hidden(edit, "Version"), ["Reference"] = "WEB-001", ["VehicleId"] = "1",
+            ["ViolationDate"] = "2026-01-01", ["Amount"] = "1500,50", ["Description"] = "Hız sınırı ihlali: tutanak açıklaması düzeltildi.",
+            ["__RequestVerificationToken"] = Hidden(edit, "__RequestVerificationToken")
+        }));
+        Assert.Equal(HttpStatusCode.Redirect, updated.StatusCode);
+        await Decision("Submitted");
+        await Login(Roles.Manager);
+        var managerHtml = await client.GetStringAsync("/Fines/Details/1");
+        Assert.Contains("name=\"Action\" value=\"ManagerApproved\"", managerHtml);
+        var output = Environment.GetEnvironmentVariable("CASE_RENDER_DIR");
+        if (output is not null) await File.WriteAllTextAsync(Path.Combine(output, "Fines_Manager_1.html"), managerHtml);
+        await Decision("ManagerApproved", "Tutanak ve araç bilgileri kontrol edildi.");
+        await Login(Roles.Finance);
+        await Decision("FinanceApproved", "Tutar kontrolü tamamlandı.");
+        var complete = await client.GetStringAsync("/Fines/Details/1");
+        Assert.DoesNotContain("name=\"Action\"", complete);
+        if (output is not null) await File.WriteAllTextAsync(Path.Combine(output, "Fines_Completed_1.html"), complete);
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        Assert.Equal(FineStatus.Completed, (await db.Fines.SingleAsync()).Status);
+        Assert.Equal(7, await db.ApprovalHistory.CountAsync());
+        Assert.Contains(await db.ApprovalHistory.ToListAsync(), h => h.Action == FineAction.Rejected && h.Comment == "Açıklama düzeltilmeli.");
     }
 }
