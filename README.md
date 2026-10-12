@@ -50,7 +50,7 @@ dotnet ef database update --project src/TrafficFine.Web
 dotnet run --project src/TrafficFine.Web
 ```
 
-`LocalDemo!2026` yalnızca yerel demo için örnek şifredir; farklı bir demo şifresi belirleyebilirsiniz. Örnek hesaplar ilk çalıştırmada bu değerle oluşturulur. Şifre veya SQL kimlik bilgilerini appsettings.json'a yazıp Git'e eklemeyin.
+Yerel demo kurulumunda üç hesabın ortak başlangıç şifresi LocalDemo!2026 olarak tanımlanır. Hesaplar ilk çalıştırmada Demo:Password değeriyle oluşturulur. Demo şifresi user-secrets üzerinden yapılandırılır.
 
 **Adres:** https://localhost:7104 (alternatif: http://localhost:5104, HTTPS'ye yönlendirilir).
 
@@ -60,7 +60,7 @@ dotnet run --project src/TrafficFine.Web
 | yonetici@case.local  | Manager    | Yönetici Onayı aşamasında onay veya gerekçeli ret verir.                                      |
 | finans@case.local    | Finance    | Finans Onayı aşamasında onay veya gerekçeli ret verir.                                        |
 
-Tüm hesapların başlangıç şifresi `Demo:Password` değeridir. Seeder yalnızca **Development** ortamında ve `Demo:Seed=true` ise çalışır. Tekrar çalıştırıldığında mevcut demo kullanıcılarının şifresini değiştirmez; tanımlı demo tutanaklarını çoğaltmaz. Beş durumun her biri için örnek kayıt oluşturur. Demo:Seed daha sonra false yapılabilir; kullanıcılar veritabanında kalır.
+DemoSeeder yalnızca **Development** ortamında ve `Demo:Seed=true` ise çalışır. Tekrar çalıştırıldığında mevcut demo kullanıcılarının şifresini değiştirmez; tanımlı demo tutanaklarını çoğaltmaz. Beş durumun her biri için örnek kayıt oluşturur. Demo:Seed daha sonra false yapılabilir; kullanıcılar veritabanında kalır.
 
 İsteğe bağlı yardımcı: `powershell -ExecutionPolicy Bypass -File scripts/setup-local.ps1`. Script restore, migration, demo şifresi ve HTTPS sertifikasını hazırlar; uygulamayı ayrıca yukarıdaki run komutuyla başlatın. Bypass yalnızca bu süreç için kullanılır.
 
@@ -154,8 +154,6 @@ Uygulamada kullanıcı yetkilendirmesi, veri doğrulama, işlem geçmişi, ret v
 - Sertifika uyarısı: `dotnet dev-certs https --trust` ve tarayıcıyı yeniden açın.
 - Tutar validation: virgül kullanın (`1500,50`), iki ondalık haneyi aşmayın.
 
-## Başvuruya teslim
-
 ## Proje Kapsamı ve Teslim Notları
 
 Bu proje, Junior .NET Developer case çalışması kapsamında ASP.NET Core MVC, Entity Framework Core ve SQL Server kullanılarak geliştirilmiştir.
@@ -173,7 +171,5 @@ Uygulamada araç yönetimi, trafik cezası oluşturma, rol bazlı onay mekanizma
 - Tamamlanan kayıtların arayüz üzerinden düzenlenemediği kontrol edilmiştir.
 
 ### Teknik Dokümantasyon
-
-Projenin kurulumu, çalıştırılması, veri modeli, iş kuralları ve test komutları bu README dosyasında açıklanmıştır.
 
 Ek doğrulama bilgileri `docs/VERIFICATION.md` dosyasında bulunmaktadır.
